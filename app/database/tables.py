@@ -1,0 +1,16 @@
+GUILDS = """CREATE TABLE IF NOT EXISTS guilds (
+    id NUMERIC PRIMARY KEY
+)"""
+
+COUNTING_CHANNELS = """CREATE TABLE IF NOT EXISTS counting_channels (
+    id NUMERIC PRIMARY KEY,
+    current BIGINT DEFAULT 0,
+    last NUMERIC NOT NULL,
+
+    guild_id NUMERIC NOT NULL,
+
+    FOREIGN KEY (guild_id) REFERENCES guilds (id)
+        ON DELETE CACADE
+)"""
+
+ALL_TABLES = [GUILDS, COUNTING_CHANNELS]

@@ -2,6 +2,9 @@ from typing import List, Any
 
 import asyncpg
 
+from .tables import ALL_TABLES
+from .db_functions import Guilds
+
 
 class Database:
     def __init__(
@@ -14,7 +17,9 @@ class Database:
         self._user = user
         self._password = password
 
-        self.pool: asyncpg.pool.Pool
+        self.pool: asyncpg.pool.Pool = None
+
+        self.guilds = Guilds(self)
 
     async def open(self) -> None:
         self.pool = await asyncpg.create_pool(
@@ -38,19 +43,5 @@ class Database:
         return await self.pool.fetchval(*args, **kwargs)
 
     async def _create_tables(self) -> None:
-        guilds_table = """CREATE TABLE IF NOT EXISTS guilds (
-            id numeric PRIMARY KEY,
-            total_messages bigint NOT NULL DEFAULT 0
-        )"""
-
-        members_table = """CREATE TABLE IF NOT EXISTS members (
-            user_id numeric NOT NULL,
-            guild_id numeric NOT NULL,
-            total_messages bigint NOT NULL DEFAULT 0,
-
-            FOREIGN KEY (guild_id) REFERENCES guilds (id)
-                ON DELETE CASCADE
-        )"""
-
-        await self.execute(guilds_table)
-        await self.execute(members_table)
+        for table in ALL_TABLES:
+            await self.execute(table)

@@ -7,9 +7,7 @@ if typing.TYPE_CHECKING:
     from .database import Database
 
 
-EXTENSIONS = [
-    "app.leveling"
-]
+EXTENSIONS = []
 
 
 class Bot(commands.Bot):
@@ -24,27 +22,7 @@ class Bot(commands.Bot):
         await self.create_data(ctx.message)
 
     async def create_data(self, message: discord.Message) -> None:
-        guild_exists = await self.db.fetchrow(
-            """SELECT * FROM guilds WHERE id=$1""",
-            message.guild.id
-        ) is not None
-        if not guild_exists:
-            await self.db.execute(
-                """INSERT INTO guilds (id) VALUES ($1)""",
-                message.guild.id
-            )
-
-        user_exists = await self.db.fetchrow(
-            """SELECT * FROM members WHERE user_id=$1
-            AND guild_id=$2""",
-            message.author.id, message.guild.id
-        )
-        if not user_exists:
-            await self.db.execute(
-                """INSERT INTO members (user_id, guild_id)
-                VALUES ($1, $2)""",
-                message.author.id, message.guild.id
-            )
+        pass
 
     async def on_ready(self) -> None:
         print(f"Logged in as {self.user} in {len(self.guilds)} guilds!")
